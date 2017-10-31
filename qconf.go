@@ -24,7 +24,13 @@ func LoadConfiguration(path string) (*Config, error) {
 	kv := make(map[string]interface{})
 	scanner := bufio.NewScanner(bufio.NewReader(f))
 	for scanner.Scan() {
-		line := scanner.Text()
+		b := scanner.Bytes()
+
+		if b[0] == 0xef && b[1] == 0xbb && b[2] == 0xbf {
+			b = b[3:]
+		}
+		line := string(b) // scanner.Text()
+
 		line = strings.TrimSpace(line)
 		index := strings.Index(line, "=")
 		if index <= 0 {
@@ -39,16 +45,16 @@ func LoadConfiguration(path string) (*Config, error) {
 	return config, scanner.Err()
 }
 
-func (conf *Config) getString(key string) string {
-	value := conf.get(key)
+func (conf *Config) GetString(key string) string {
+	value := conf.Get(key)
 	if value == nil {
 		return ""
 	}
 	return fmt.Sprint(value)
 }
 
-func (conf *Config) getInteger(key string) (int64, error) {
-	value := conf.get(key)
+func (conf *Config) GetInteger(key string) (int64, error) {
+	value := conf.Get(key)
 	if value == nil {
 		return 0, errors.New("it is not a Integer")
 	}
@@ -60,8 +66,8 @@ func (conf *Config) getInteger(key string) (int64, error) {
 	return b, nil
 }
 
-func (conf *Config) getBoolean(key string) (bool, error) {
-	value := conf.get(key)
+func (conf *Config) GetBoolean(key string) (bool, error) {
+	value := conf.Get(key)
 	if value == nil {
 		return false, errors.New("it is not a boolean")
 	}
@@ -72,7 +78,7 @@ func (conf *Config) getBoolean(key string) (bool, error) {
 	return b, nil
 }
 
-func (conf *Config) get(key string) interface{} {
+func (conf *Config) Get(key string) interface{} {
 	if v, ok := conf.kv[strings.ToLower(key)]; ok {
 		return v
 	} else {
