@@ -1,8 +1,8 @@
 package qconf
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestQconf(t *testing.T) {
@@ -13,7 +13,8 @@ func TestQconf(t *testing.T) {
 	}
 	fmt.Println(conf)
 	fmt.Println(conf.kv)
-	fmt.Println(conf.getInteger("WorkerHeartTime"))
-	fmt.Println(conf.getInteger("vpshearttime"))
-	fmt.Println(conf.getString("redispassword"))
+	fmt.Println(conf.GetString("DialHours"))
+	fmt.Println(conf.GetInteger("WorkerHeartTime"))
+	fmt.Println(conf.GetInteger("vpshearttime"))
+	fmt.Println(conf.GetInteger("redispassword"))
 }

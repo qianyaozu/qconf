@@ -3,10 +3,10 @@ package qconf
 import (
 	"bufio"
 	"errors"
-	"os"
-	"strings"
-	"strconv"
 	"fmt"
+	"os"
+	"strconv"
+	"strings"
 )
 
 type Config struct {
@@ -23,20 +23,28 @@ func LoadConfiguration(path string) (*Config, error) {
 	config := new(Config)
 	kv := make(map[string]interface{})
 	scanner := bufio.NewScanner(bufio.NewReader(f))
+	i := 0
 	for scanner.Scan() {
-		b := scanner.Bytes()
-
-		if b[0] == 0xef && b[1] == 0xbb && b[2] == 0xbf {
-			b = b[3:]
+		var line string
+		if i == 0 {
+			b := scanner.Bytes()
+			if b[0] == 0xef && b[1] == 0xbb && b[2] == 0xbf {
+				b = b[3:]
+			}
+			line = string(b) // scanner.Text()
+		} else {
+			line = scanner.Text()
 		}
-		line := string(b) // scanner.Text()
-
+		i++
 		line = strings.TrimSpace(line)
 		index := strings.Index(line, "=")
 		if index <= 0 {
 			return nil, errors.New(" configuration format requires an equals between the key and value")
 		}
 		key := strings.ToLower(strings.TrimSpace(line[0:index]))
+		if strings.Index(key, "#") == 0 {
+			continue
+		}
 		value := strings.TrimSpace(line[index+1:])
 		value = strings.Trim(value, "\"'") //clear quotes
 		kv[key] = value
@@ -82,7 +90,6 @@ func (conf *Config) Get(key string) interface{} {
 	if v, ok := conf.kv[strings.ToLower(key)]; ok {
 		return v
 	} else {
-		fmt.Println("not ok")
 		return nil
 	}
 
