@@ -77,7 +77,7 @@ func (conf *Config) GetInteger(key string) (int64, error) {
 func (conf *Config) GetBoolean(key string) (bool, error) {
 	value := conf.Get(key)
 	if value == nil {
-		return false, errors.New("it is not a boolean")
+		return false, errors.New("there is no key named:" + key)
 	}
 	b, ok := value.(bool)
 	if !ok {
@@ -100,4 +100,8 @@ func (conf *Config) Keys() []string {
 		list = append(list, k)
 	}
 	return list
+}
+
+func (conf *Config)  Save(){
+
 }
