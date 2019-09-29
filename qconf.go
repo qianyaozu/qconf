@@ -37,14 +37,16 @@ func LoadConfiguration(path string) (*Config, error) {
 		}
 		i++
 		line = strings.TrimSpace(line)
+
+		if line == "" || strings.Index(line, "#") == 0 {
+			continue
+		}
 		index := strings.Index(line, "=")
 		if index <= 0 {
 			return nil, errors.New(" configuration format requires an equals between the key and value")
 		}
 		key := strings.ToLower(strings.TrimSpace(line[0:index]))
-		if strings.Index(key, "#") == 0 {
-			continue
-		}
+
 		value := strings.TrimSpace(line[index+1:])
 		value = strings.Trim(value, "\"'") //clear quotes
 		kv[key] = value
