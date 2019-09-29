@@ -14,7 +14,6 @@ type Config struct {
 }
 
 func LoadConfiguration(path string) (*Config, error) {
-
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
